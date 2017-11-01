@@ -12,7 +12,8 @@ class App extends Component {
       chatWindow: []
     };
 
-    // this.handleUpdate = this.handleUpdate.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.submitMessage = this.submitMessage.bind(this);
   }
 
   componentWillMount() {
@@ -38,6 +39,10 @@ class App extends Component {
     });
   }
 
+  handleKeyPress(e) {
+    if (e.key === 'Enter') this.submitMessage(e);
+  }
+
   handleUpdate(field) {
     return e => {
       this.setState({ [field]: e.currentTarget.value  });
@@ -46,8 +51,12 @@ class App extends Component {
 
   submitMessage(e) {
     e.preventDefault();
-    this.chats.create(this.state.message);
-    this.setState({ message: '' });
+    const { message } = this.state;
+
+    if (message) {
+      this.chats.create(message);
+      this.setState({ message: '' });
+    }
   }
 
   renderChatMessages() {
@@ -69,11 +78,12 @@ class App extends Component {
             <input
               value={this.state.message}
               onChange={this.handleUpdate('message')}
+              onKeyPress={this.handleKeyPress}
               type="text"
               placeholder="What's on your mind?"
               className="chat-input"
             />
-            <button onClick={this.submitMessage.bind(this)} className="send-btn">
+            <button onClick={this.submitMessage} className="send-btn">
               Send
             </button>
           </div>
