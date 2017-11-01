@@ -5,7 +5,7 @@ class MessageCreationEventBroadcastJob < ApplicationJob
     ActionCable.server.broadcast(
       'chat_channel',
       id: message.id,
-      sent_at: message.created_at.strftime('%H%M'),
+      sent_at: message.created_at.in_time_zone("Eastern Time (US & Canada)").strftime('%H:%M'),
       content: message.content
     )
   end
