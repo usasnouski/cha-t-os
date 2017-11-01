@@ -14,6 +14,10 @@ class App extends Component {
     // this.handleUpdate = this.handleUpdate.bind(this);
   }
 
+  componentWillMount() {
+    this.intializeSocket();
+  }
+
   intializeSocket() {
     const cable = Cable.createConsumer('ws://localhost:3001/cable');
     this.chats = cable.subscriptions.create({
@@ -23,10 +27,8 @@ class App extends Component {
       connected: () => {},
       received: (data) => {
         console.log(data);
-      }
-    },
-    {
-      create: chatContent => {
+      },
+      create: function (chatContent) {
         this.perform('create', { content: chatContent });
       }
     });
@@ -35,6 +37,14 @@ class App extends Component {
   handleUpdate(field) {
     return e => {
       this.setState({ [field]: e.currentTarget.value  });
+    }
+  }
+
+  submitMessage(e) {
+    return e => {
+      e.preventDefault();
+      this.chats.create(this.state.message);
+      this.setState({ message: '' });
     }
   }
 
@@ -51,7 +61,7 @@ class App extends Component {
             placeholder="What's on your mind?"
             className="chat-input"
           />
-          <button onClick={this.submitMessage} className="send-btn">
+        <button onClick={this.submitMessage.bind(this)} className="send-btn">
             Send
           </button>
         </div>
