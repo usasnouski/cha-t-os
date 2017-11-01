@@ -14,6 +14,24 @@ class App extends Component {
     // this.handleUpdate = this.handleUpdate.bind(this);
   }
 
+  intializeSocket() {
+    const cable = Cable.createConsumer('ws://localhost:3001/cable');
+    this.chats = cable.subscriptions.create({
+      channel: 'ChatosChannel',
+    },
+    {
+      connected: () => {},
+      received: (data) => {
+        console.log(data);
+      }
+    },
+    {
+      create: chatContent => {
+        this.perform('create', { content: chatContent });
+      }
+    });
+  }
+
   handleUpdate(field) {
     return e => {
       this.setState({ [field]: e.currentTarget.value  });
